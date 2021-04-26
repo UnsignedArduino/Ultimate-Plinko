@@ -23,6 +23,14 @@ c c c c
 c c c c 
 c c c c 
 `;
+            case "`CAJOn9kkqxpbQlaL2+!":
+            case "coin_dropper":return img`
+f f . . . . . f f 
+f f . . . . . f f 
+f f . . . . . f f 
+f f . . . . . f f 
+f f . . . . . f f 
+`;
         }
         return null;
     })

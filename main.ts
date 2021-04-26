@@ -1,3 +1,9 @@
+function make_coin_dropper () {
+    sprite_dropper = sprites.create(assets.image`coin_dropper`, SpriteKind.Player)
+    sprite_dropper.top = 0
+    sprite_dropper.x = scene.screenWidth() / 2
+    controller.moveSprite(sprite_dropper, 75, 0)
+}
 function clear_tilemap () {
     for (let row = 0; row <= tiles.tilemapRows() - 1; row++) {
         for (let col = 0; col <= tiles.tilemapColumns() - 1; col++) {
@@ -26,7 +32,9 @@ function make_map () {
         tiles.setWallAt(tiles.getTileLocation(tiles.tilemapColumns() - 1, row), true)
     }
 }
+let sprite_dropper: Sprite = null
 scene.setBackgroundColor(11)
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
 clear_tilemap()
 make_map()
+make_coin_dropper()
