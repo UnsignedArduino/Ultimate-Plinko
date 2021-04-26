@@ -1,0 +1,22 @@
+{
+    "": {
+        "data": "hwQEAAQAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "clear_tile"
+    },
+    ";mKOJA=fPT]q": {
+        "data": "hwQEAAQAAADADAAAzMwAAMzMAADADAAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "pole"
+    },
+    "odQG^_YS0*eIr,td%$)?": {
+        "data": "hwQEAAQAAADMzAAAzMwAAMzMAADMzAAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "wall"
+    },
+    "*": {
+        "mimeType": "image/x-mkcd-f4",
+        "dataEncoding": "base64",
+        "namespace": "myImages"
+    }
+}
