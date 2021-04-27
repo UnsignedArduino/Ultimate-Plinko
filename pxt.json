@@ -7,7 +7,9 @@
         "tilemaps": "github:microsoft/pxt-tilemaps#v1.11.0",
         "smaller-tilemaps": "github:riknoll/smaller-tilemaps#42b1786ff3aafd61aa89ea9b038230fc039d2af3",
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
-        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.1.1"
+        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.1.1",
+        "Color Fading": "github:jwunderl/pxt-color#v0.2.1",
+        "block-menu": "github:riknoll/arcade-custom-menu#v0.0.1"
     },
     "files": [
         "main.blocks",

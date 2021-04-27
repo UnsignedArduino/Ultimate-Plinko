@@ -24,6 +24,13 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
         }
     }
 })
+function make_title_text (sprite: Sprite, top: number, left: number) {
+    sprite.top = top
+    sprite.left = left
+    sprite.setFlag(SpriteFlag.AutoDestroy, true)
+    sprite.setFlag(SpriteFlag.Ghost, true)
+    return sprite
+}
 scene.onOverlapTile(SpriteKind.Player, assets.image`10_points`, function (sprite, location) {
     change_score(5)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
@@ -77,6 +84,12 @@ function make_containers () {
     fill_tiles(31, tiles.tilemapRows() - 1 - 3, 32, tiles.tilemapRows() - 1, assets.image`wall`, true)
     fill_tiles(32, tiles.tilemapRows() - 1 - 3, 39, tiles.tilemapRows() - 1, assets.image`10_points`, false)
 }
+function fade_out (delay: number, block: boolean) {
+    color.startFade(color.Black, color.originalPalette, delay)
+    if (block) {
+        color.pauseUntilFadeDone()
+    }
+}
 info.onCountdownEnd(function () {
     can_drop = false
     disable_movement(sprite_dropper)
@@ -91,6 +104,19 @@ info.onCountdownEnd(function () {
         game.over(true, effects.confetti)
     })
 })
+function wait_for_selected () {
+    selected = false
+    while (!(selected)) {
+        pause(100)
+    }
+    blockMenu.closeMenu()
+}
+function fade_in (delay: number, block: boolean) {
+    color.startFade(color.originalPalette, color.Black, delay)
+    if (block) {
+        color.pauseUntilFadeDone()
+    }
+}
 function make_all_poles () {
     for (let row = 0; row <= tiles.tilemapRows() / 4 - 2; row++) {
         for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
@@ -131,8 +157,7 @@ function popup_text (sprite: Sprite, text: string) {
 function make_coin_dropper () {
     sprite_dropper = sprites.create(assets.image`coin_dropper`, SpriteKind.Dropper)
     sprite_dropper.top = 0
-    sprite_dropper.x = scene.screenWidth() / 2
-    enable_movement(sprite_dropper)
+    sprite_dropper.x = scene.screenWidth() * 0.33
 }
 scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite, location) {
     change_score(15)
@@ -191,6 +216,9 @@ function make_walls () {
         tiles.setWallAt(tiles.getTileLocation(tiles.tilemapColumns() - 1, row), true)
     }
 }
+blockMenu.onMenuOptionSelected(function (option, index) {
+    selected = true
+})
 scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite, location) {
     change_score(25)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
@@ -207,19 +235,37 @@ function remove_pole (column: number, row: number) {
 let angle = 0
 let sprite_popup: TextSprite = null
 let location: tiles.Location = null
+let selected = false
 let sprite_dropper: Sprite = null
 let can_drop = false
+let coins_dropping = 0
 let actual_score = 0
+color.setPalette(
+color.Black
+)
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
 scene.setBackgroundImage(assets.image`background`)
 clear_tilemap()
 make_map()
 make_coin_dropper()
-info.setScore(100)
-actual_score = info.score()
-let coins_dropping = 0
-can_drop = true
-info.startCountdown(60)
+let text_title = make_title_text(sprites.create(assets.image`title_screen`, SpriteKind.Text), 0, 0)
+blockMenu.setColors(1, 15)
+fade_out(2000, false)
+let in_game = false
+blockMenu.showMenu(["Play", ""], MenuStyle.List, MenuLocation.BottomHalf)
+timer.background(function () {
+    wait_for_selected()
+    text_title.ay = -500
+    if (blockMenu.selectedMenuIndex() == 0) {
+        info.setScore(100)
+        actual_score = info.score()
+        coins_dropping = 0
+        in_game = true
+        can_drop = true
+        enable_movement(sprite_dropper)
+        info.startCountdown(60)
+    }
+})
 game.onUpdate(function () {
     if (can_drop) {
         if (coins_dropping > 0) {
@@ -246,38 +292,42 @@ game.onUpdateInterval(25, function () {
 })
 forever(function () {
     pause(1000)
-    if (Math.percentChance(10)) {
-        for (let row = 0; row <= tiles.tilemapRows() / 4 - 2; row++) {
-            for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
-                if (row % 2 == 0) {
-                    location = tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1)
-                } else {
-                    location = tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1)
-                }
-                if (Math.percentChance(75)) {
-                    if (tiles.tileAtLocationEquals(location, assets.image`clear`)) {
-                        add_pole(tiles.locationXY(location, tiles.XY.column), tiles.locationXY(location, tiles.XY.row))
+    if (in_game) {
+        if (Math.percentChance(10)) {
+            for (let row = 0; row <= tiles.tilemapRows() / 4 - 2; row++) {
+                for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
+                    if (row % 2 == 0) {
+                        location = tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1)
+                    } else {
+                        location = tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1)
                     }
-                } else {
-                    if (tiles.tileAtLocationEquals(location, assets.image`pole`)) {
-                        remove_pole(tiles.locationXY(location, tiles.XY.column), tiles.locationXY(location, tiles.XY.row))
+                    if (Math.percentChance(75)) {
+                        if (tiles.tileAtLocationEquals(location, assets.image`clear`)) {
+                            add_pole(tiles.locationXY(location, tiles.XY.column), tiles.locationXY(location, tiles.XY.row))
+                        }
+                    } else {
+                        if (tiles.tileAtLocationEquals(location, assets.image`pole`)) {
+                            remove_pole(tiles.locationXY(location, tiles.XY.column), tiles.locationXY(location, tiles.XY.row))
+                        }
                     }
+                    pause(100)
                 }
-                pause(100)
             }
         }
     }
 })
 forever(function () {
-    if (actual_score < 25 && sprites.allOfKind(SpriteKind.Player).length == 0) {
-        info.stopCountdown()
-        can_drop = false
-        disable_movement(sprite_dropper)
-        while (info.score() != actual_score) {
-            pause(100)
+    if (in_game) {
+        if (actual_score < 25 && sprites.allOfKind(SpriteKind.Player).length == 0) {
+            info.stopCountdown()
+            can_drop = false
+            disable_movement(sprite_dropper)
+            while (info.score() != actual_score) {
+                pause(100)
+            }
+            pause(2000)
+            game.over(false, effects.melt)
         }
-        pause(2000)
-        game.over(false, effects.melt)
     }
     pause(1000)
 })
