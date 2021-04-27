@@ -22,11 +22,11 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.image`10_points`, function (sprite, location) {
-    info.changeScoreBy(5)
+    change_score(5)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
 function drop_coin (dropper: Sprite) {
-    disable_movement(dropper)
+    coins_dropping += 1
     sprite_coin = sprites.create(assets.image`coin`, SpriteKind.Player)
     sprite_coin.x = dropper.x
     sprite_coin.bottom = dropper.top
@@ -37,20 +37,21 @@ function drop_coin (dropper: Sprite) {
         sprite_coin.setFlag(SpriteFlag.Ghost, false)
     })
     timer.after(500, function () {
-        enable_movement(dropper)
+        coins_dropping += -1
     })
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (info.score() >= 25) {
-        timer.throttle("drop_coin", 500, function () {
-            drop_coin(sprite_dropper)
-            info.changeScoreBy(-25)
-        })
-    }
+    try_coin_drop()
 })
+function try_coin_drop () {
+    if (actual_score >= 25) {
+        drop_coin(sprite_dropper)
+        change_score(-25)
+    }
+}
+// for some reason the events fire twice
 scene.onOverlapTile(SpriteKind.Player, assets.image`100_points`, function (sprite, location) {
-    // for some reason the events fire twice
-    info.changeScoreBy(50)
+    change_score(50)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
 function make_containers () {
@@ -94,7 +95,7 @@ function make_coin_dropper () {
     enable_movement(sprite_dropper)
 }
 scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite, location) {
-    info.changeScoreBy(15)
+    change_score(15)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
 function clear_tilemap () {
@@ -117,6 +118,24 @@ function fill_tiles (from_col: number, from_row: number, to_col: number, to_row:
         }
     }
 }
+function change_score (value: number) {
+    actual_score += value
+    if (value < 0) {
+        timer.background(function () {
+            for (let index = 0; index < Math.abs(value); index++) {
+                info.changeScoreBy(-1)
+                pause(20)
+            }
+        })
+    } else {
+        timer.background(function () {
+            for (let index = 0; index < value; index++) {
+                info.changeScoreBy(1)
+                pause(20)
+            }
+        })
+    }
+}
 function make_walls () {
     for (let col = 0; col <= tiles.tilemapColumns() - 1; col++) {
         tiles.setTileAt(tiles.getTileLocation(col, tiles.tilemapRows() - 1), assets.image`wall`)
@@ -130,14 +149,24 @@ function make_walls () {
     }
 }
 scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite, location) {
-    info.changeScoreBy(25)
+    change_score(25)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
 let sprite_dropper: Sprite = null
 let sprite_coin: Sprite = null
+let actual_score = 0
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
 scene.setBackgroundImage(assets.image`background`)
 clear_tilemap()
 make_map()
 make_coin_dropper()
 info.setScore(100)
+actual_score = info.score()
+let coins_dropping = 0
+game.onUpdate(function () {
+    if (coins_dropping > 0) {
+        disable_movement(sprite_dropper)
+    } else {
+        enable_movement(sprite_dropper)
+    }
+})
