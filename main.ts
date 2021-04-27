@@ -118,6 +118,19 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     sprite.setVelocity(sprite.vx * -1, sprite.vy * -1)
     otherSprite.setVelocity(otherSprite.vx * -1, otherSprite.vy * -1)
+    angle = spriteutils.angleFrom(otherSprite, sprite)
+    spriteutils.placeAngleFrom(
+    sprite,
+    angle,
+    6,
+    otherSprite
+    )
+    spriteutils.placeAngleFrom(
+    otherSprite,
+    angle + 3.14159,
+    6,
+    sprite
+    )
 })
 function clear_tilemap () {
     for (let row = 0; row <= tiles.tilemapRows() - 1; row++) {
@@ -161,6 +174,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite
 })
 // TODO: 
 // - poles disappear and reappear randomly (make smooth animation too)
+let angle = 0
 let sprite_popup: TextSprite = null
 let sprite_dropper: Sprite = null
 let actual_score = 0
