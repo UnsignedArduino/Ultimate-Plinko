@@ -40,6 +40,7 @@ function drop_coin (dropper: Sprite, coin: Sprite) {
     coins_dropping += 1
     coin.x = dropper.x
     coin.bottom = dropper.top
+    coin.lifespan = 120000
     coin.ay = 100
     coin.setFlag(SpriteFlag.BounceOnWall, true)
     coin.setFlag(SpriteFlag.Ghost, true)
