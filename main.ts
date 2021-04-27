@@ -1,11 +1,13 @@
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (tiles.locationXY(location, tiles.XY.row) > tiles.tilemapRows() - 4) {
-        sprite.vy = Math.abs(sprite.vy)
-        sprite.setFlag(SpriteFlag.AutoDestroy, true)
-        sprite.setFlag(SpriteFlag.GhostThroughWalls, true)
-        timer.after(1, function () {
+        if (sprite.isHittingTile(CollisionDirection.Bottom)) {
             sprite.vy = Math.abs(sprite.vy)
-        })
+            sprite.setFlag(SpriteFlag.AutoDestroy, true)
+            sprite.setFlag(SpriteFlag.GhostThroughWalls, true)
+            timer.after(1, function () {
+                sprite.vy = Math.abs(sprite.vy)
+            })
+        }
     } else {
         if (Math.percentChance(50)) {
             sprite.vx = randint(50, 75)
@@ -18,6 +20,10 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
             })
         }
     }
+})
+scene.onOverlapTile(SpriteKind.Player, assets.image`10_points`, function (sprite, location) {
+    info.changeScoreBy(5)
+    sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
 function drop_coin (dropper: Sprite) {
     sprite_coin = sprites.create(assets.image`coin`, SpriteKind.Player)
@@ -36,23 +42,23 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         info.changeScoreBy(-25)
     }
 })
+scene.onOverlapTile(SpriteKind.Player, assets.image`100_points`, function (sprite, location) {
+    // for some reason the events fire twice
+    info.changeScoreBy(50)
+    sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+})
 function make_containers () {
     fill_tiles(1, tiles.tilemapRows() - 1 - 3, 8, tiles.tilemapRows() - 1, assets.image`10_points`, false)
     fill_tiles(8, tiles.tilemapRows() - 1 - 3, 9, tiles.tilemapRows() - 1, assets.image`wall`, true)
-    fill_tiles(9, tiles.tilemapRows() - 1 - 3, 14, tiles.tilemapRows() - 1, assets.image`25_points`, false)
+    fill_tiles(9, tiles.tilemapRows() - 1 - 3, 14, tiles.tilemapRows() - 1, assets.image`30_points`, false)
     fill_tiles(14, tiles.tilemapRows() - 1 - 3, 15, tiles.tilemapRows() - 1, assets.image`wall`, true)
     fill_tiles(15, tiles.tilemapRows() - 1 - 3, 18, tiles.tilemapRows() - 1, assets.image`50_points`, false)
     fill_tiles(18, tiles.tilemapRows() - 1 - 3, 19, tiles.tilemapRows() - 1, assets.image`wall`, true)
-    fill_tiles(19, tiles.tilemapRows() - 1 - 3, 22, tiles.tilemapRows() - 1, img`
-        3 3 3 3 
-        3 3 3 3 
-        3 3 3 3 
-        3 3 3 3 
-        `, false)
+    fill_tiles(19, tiles.tilemapRows() - 1 - 3, 22, tiles.tilemapRows() - 1, assets.image`100_points`, false)
     fill_tiles(22, tiles.tilemapRows() - 1 - 3, 23, tiles.tilemapRows() - 1, assets.image`wall`, true)
     fill_tiles(23, tiles.tilemapRows() - 1 - 3, 26, tiles.tilemapRows() - 1, assets.image`50_points`, false)
     fill_tiles(26, tiles.tilemapRows() - 1 - 3, 27, tiles.tilemapRows() - 1, assets.image`wall`, true)
-    fill_tiles(27, tiles.tilemapRows() - 1 - 3, 31, tiles.tilemapRows() - 1, assets.image`25_points`, false)
+    fill_tiles(27, tiles.tilemapRows() - 1 - 3, 31, tiles.tilemapRows() - 1, assets.image`30_points`, false)
     fill_tiles(31, tiles.tilemapRows() - 1 - 3, 32, tiles.tilemapRows() - 1, assets.image`wall`, true)
     fill_tiles(32, tiles.tilemapRows() - 1 - 3, 39, tiles.tilemapRows() - 1, assets.image`10_points`, false)
 }
@@ -75,6 +81,10 @@ function make_coin_dropper () {
     sprite_dropper.x = scene.screenWidth() / 2
     controller.moveSprite(sprite_dropper, 75, 0)
 }
+scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite, location) {
+    info.changeScoreBy(15)
+    sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+})
 function clear_tilemap () {
     for (let row = 0; row <= tiles.tilemapRows() - 1; row++) {
         for (let col = 0; col <= tiles.tilemapColumns() - 1; col++) {
@@ -107,6 +117,10 @@ function make_walls () {
         tiles.setWallAt(tiles.getTileLocation(tiles.tilemapColumns() - 1, row), true)
     }
 }
+scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite, location) {
+    info.changeScoreBy(25)
+    sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+})
 let sprite_dropper: Sprite = null
 let sprite_coin: Sprite = null
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)

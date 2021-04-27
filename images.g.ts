@@ -24,13 +24,6 @@ c c c c
 c c c c 
 c c c c 
 `;
-            case "!0VA7z*,uEROiw=HJRQ2":
-            case "25_points":return img`
-7 7 7 7 
-7 7 7 7 
-7 7 7 7 
-7 7 7 7 
-`;
             case "[jo)YH_:2$A_9#g3,7!X":
             case "background":return img`
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
@@ -190,6 +183,20 @@ f f . . . . . . f f
 f f . . . . . . f f 
 f f . . . . . . f f 
 f f . . . . . . f f 
+`;
+            case "8Emp4}=$f*CD/FJz+mx7":
+            case "100_points":return img`
+3 3 3 3 
+3 3 3 3 
+3 3 3 3 
+3 3 3 3 
+`;
+            case "!0VA7z*,uEROiw=HJRQ2":
+            case "30_points":return img`
+7 7 7 7 
+7 7 7 7 
+7 7 7 7 
+7 7 7 7 
 `;
         }
         return null;
