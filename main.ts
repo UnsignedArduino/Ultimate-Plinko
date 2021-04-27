@@ -252,19 +252,36 @@ let text_title = make_title_text(sprites.create(assets.image`title_screen`, Spri
 blockMenu.setColors(1, 15)
 fade_out(2000, false)
 let in_game = false
-blockMenu.showMenu(["Play", ""], MenuStyle.List, MenuLocation.BottomHalf)
+let options: string[] = []
+options.push("Easy (8 coins + 120 secs)")
+options.push("Regular (4 coins + 60 secs)")
+options.push("Hard (1 coin + 60 secs)")
+options.push("Fast (4 coins + 30 secs)")
+options.push("Free play (10 coins + infinite time)")
+blockMenu.showMenu(options, MenuStyle.List, MenuLocation.BottomHalf)
 timer.background(function () {
     wait_for_selected()
     text_title.ay = -500
     if (blockMenu.selectedMenuIndex() == 0) {
+        info.setScore(200)
+        info.startCountdown(120)
+    } else if (blockMenu.selectedMenuIndex() == 1) {
         info.setScore(100)
-        actual_score = info.score()
-        coins_dropping = 0
-        in_game = true
-        can_drop = true
-        enable_movement(sprite_dropper)
         info.startCountdown(60)
+    } else if (blockMenu.selectedMenuIndex() == 2) {
+        info.setScore(25)
+        info.startCountdown(60)
+    } else if (blockMenu.selectedMenuIndex() == 3) {
+        info.setScore(100)
+        info.startCountdown(30)
+    } else if (blockMenu.selectedMenuIndex() == 4) {
+        info.setScore(250)
     }
+    actual_score = info.score()
+    coins_dropping = 0
+    in_game = true
+    can_drop = true
+    enable_movement(sprite_dropper)
 })
 game.onUpdate(function () {
     if (can_drop) {
