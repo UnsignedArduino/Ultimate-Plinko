@@ -1,3 +1,6 @@
+namespace SpriteKind {
+    export const Dropper = SpriteKind.create()
+}
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (tiles.locationXY(location, tiles.XY.row) > tiles.tilemapRows() - 4) {
         if (sprite.isHittingTile(CollisionDirection.Bottom)) {
@@ -26,18 +29,19 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`10_points`, function (sprite
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
     popup_text(sprite, "+10")
 })
-function drop_coin (dropper: Sprite) {
+function drop_coin (dropper: Sprite, coin: Sprite) {
     coins_dropping += 1
-    sprite_coin = sprites.create(assets.image`coin`, SpriteKind.Player)
-    sprite_coin.x = dropper.x
-    sprite_coin.bottom = dropper.top
-    sprite_coin.ay = 100
-    sprite_coin.setFlag(SpriteFlag.BounceOnWall, true)
-    sprite_coin.setFlag(SpriteFlag.Ghost, true)
+    coin.x = dropper.x
+    coin.bottom = dropper.top
+    coin.ay = 100
+    coin.setFlag(SpriteFlag.BounceOnWall, true)
+    coin.setFlag(SpriteFlag.Ghost, true)
     timer.after(50, function () {
-        sprite_coin.setFlag(SpriteFlag.Ghost, false)
+        coin.setFlag(SpriteFlag.Ghost, false)
+        coin.setFlag(SpriteFlag.GhostThroughSprites, true)
     })
     timer.after(500, function () {
+        coin.setFlag(SpriteFlag.GhostThroughSprites, false)
         coins_dropping += -1
     })
 }
@@ -46,7 +50,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function try_coin_drop () {
     if (actual_score >= 25) {
-        drop_coin(sprite_dropper)
+        drop_coin(sprite_dropper, sprites.create(assets.image`coin`, SpriteKind.Player))
         change_score(-25)
     }
 }
@@ -101,7 +105,7 @@ function popup_text (sprite: Sprite, text: string) {
     })
 }
 function make_coin_dropper () {
-    sprite_dropper = sprites.create(assets.image`coin_dropper`, SpriteKind.Player)
+    sprite_dropper = sprites.create(assets.image`coin_dropper`, SpriteKind.Dropper)
     sprite_dropper.top = 0
     sprite_dropper.x = scene.screenWidth() / 2
     enable_movement(sprite_dropper)
@@ -110,6 +114,10 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite
     change_score(15)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
     popup_text(sprite, "+30")
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
+    sprite.setVelocity(sprite.vx * -1, sprite.vy * -1)
+    otherSprite.setVelocity(otherSprite.vx * -1, otherSprite.vy * -1)
 })
 function clear_tilemap () {
     for (let row = 0; row <= tiles.tilemapRows() - 1; row++) {
@@ -155,7 +163,6 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite
 // - poles disappear and reappear randomly (make smooth animation too)
 let sprite_popup: TextSprite = null
 let sprite_dropper: Sprite = null
-let sprite_coin: Sprite = null
 let actual_score = 0
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
 scene.setBackgroundImage(assets.image`background`)
