@@ -49,9 +49,11 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     try_coin_drop()
 })
 function try_coin_drop () {
-    if (actual_score >= 25) {
-        drop_coin(sprite_dropper, sprites.create(assets.image`coin`, SpriteKind.Player))
-        change_score(-25)
+    if (can_drop) {
+        if (actual_score >= 25) {
+            drop_coin(sprite_dropper, sprites.create(assets.image`coin`, SpriteKind.Player))
+            change_score(-25)
+        }
     }
 }
 // for some reason the events fire twice
@@ -75,6 +77,20 @@ function make_containers () {
     fill_tiles(31, tiles.tilemapRows() - 1 - 3, 32, tiles.tilemapRows() - 1, assets.image`wall`, true)
     fill_tiles(32, tiles.tilemapRows() - 1 - 3, 39, tiles.tilemapRows() - 1, assets.image`10_points`, false)
 }
+info.onCountdownEnd(function () {
+    can_drop = false
+    disable_movement(sprite_dropper)
+    timer.background(function () {
+        while (sprites.allOfKind(SpriteKind.Player).length > 0) {
+            pause(100)
+        }
+        while (info.score() != actual_score) {
+            pause(100)
+        }
+        pause(2000)
+        game.over(true, effects.confetti)
+    })
+})
 function make_all_poles () {
     for (let row = 0; row <= tiles.tilemapRows() / 4 - 2; row++) {
         for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
@@ -188,12 +204,11 @@ function remove_pole (column: number, row: number) {
         tiles.setWallAt(tiles.getTileLocation(column, row), false)
     })
 }
-// TODO: 
-// - poles disappear and reappear randomly (make smooth animation too)
 let angle = 0
 let sprite_popup: TextSprite = null
 let location: tiles.Location = null
 let sprite_dropper: Sprite = null
+let can_drop = false
 let actual_score = 0
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
 scene.setBackgroundImage(assets.image`background`)
@@ -203,11 +218,15 @@ make_coin_dropper()
 info.setScore(100)
 actual_score = info.score()
 let coins_dropping = 0
+can_drop = true
+info.startCountdown(60)
 game.onUpdate(function () {
-    if (coins_dropping > 0) {
-        disable_movement(sprite_dropper)
-    } else {
-        enable_movement(sprite_dropper)
+    if (can_drop) {
+        if (coins_dropping > 0) {
+            disable_movement(sprite_dropper)
+        } else {
+            enable_movement(sprite_dropper)
+        }
     }
 })
 game.onUpdateInterval(25, function () {
