@@ -176,14 +176,6 @@ c c c c
 c c c c 
 . c c . 
 `;
-            case "`CAJOn9kkqxpbQlaL2+!":
-            case "coin_dropper":return img`
-f f . . . . . . f f 
-f f . . . . . . f f 
-f f . . . . . . f f 
-f f . . . . . . f f 
-f f . . . . . . f f 
-`;
             case "8Emp4}=$f*CD/FJz+mx7":
             case "100_points":return img`
 3 3 3 3 
@@ -204,6 +196,21 @@ f f . . . . . . f f
 . c c . 
 . c c . 
 . . . . 
+`;
+            case "`CAJOn9kkqxpbQlaL2+!":
+            case "coin_dropper":return img`
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
+f f . . . . . . f f 
 `;
         }
         return null;

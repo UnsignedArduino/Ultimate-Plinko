@@ -268,3 +268,16 @@ forever(function () {
         }
     }
 })
+forever(function () {
+    if (actual_score < 25 && sprites.allOfKind(SpriteKind.Player).length == 0) {
+        info.stopCountdown()
+        can_drop = false
+        disable_movement(sprite_dropper)
+        while (info.score() != actual_score) {
+            pause(100)
+        }
+        pause(2000)
+        game.over(false, effects.melt)
+    }
+    pause(1000)
+})

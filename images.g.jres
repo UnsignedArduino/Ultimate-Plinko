@@ -39,11 +39,6 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "pole"
     },
-    "`CAJOn9kkqxpbQlaL2+!": {
-        "data": "hwQKAAUAAAD//w8A//8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//DwD//w8A",
-        "mimeType": "image/x-mkcd-f4",
-        "displayName": "coin_dropper"
-    },
     "8Emp4}=$f*CD/FJz+mx7": {
         "data": "hwQEAAQAAAAzMwAAMzMAADMzAAAzMwAA",
         "mimeType": "image/x-mkcd-f4",
@@ -58,6 +53,11 @@
         "data": "hwQEAAQAAAAAAAAAwAwAAMAMAAAAAAAA",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "partway_through_pole"
+    },
+    "`CAJOn9kkqxpbQlaL2+!": {
+        "data": "hwQKAAwAAAD///////8AAP///////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAD///////8AAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "coin_dropper"
     },
     "*": {
         "mimeType": "image/x-mkcd-f4",
