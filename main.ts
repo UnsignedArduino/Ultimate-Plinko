@@ -26,6 +26,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`10_points`, function (sprite
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
 function drop_coin (dropper: Sprite) {
+    disable_movement(dropper)
     sprite_coin = sprites.create(assets.image`coin`, SpriteKind.Player)
     sprite_coin.x = dropper.x
     sprite_coin.bottom = dropper.top
@@ -35,11 +36,16 @@ function drop_coin (dropper: Sprite) {
     timer.after(50, function () {
         sprite_coin.setFlag(SpriteFlag.Ghost, false)
     })
+    timer.after(500, function () {
+        enable_movement(dropper)
+    })
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (info.score() >= 25) {
-        drop_coin(sprite_dropper)
-        info.changeScoreBy(-25)
+        timer.throttle("drop_coin", 500, function () {
+            drop_coin(sprite_dropper)
+            info.changeScoreBy(-25)
+        })
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.image`100_points`, function (sprite, location) {
@@ -75,11 +81,17 @@ function make_all_poles () {
         }
     }
 }
+function disable_movement (dropper: Sprite) {
+    controller.moveSprite(dropper, 0, 0)
+}
+function enable_movement (dropper: Sprite) {
+    controller.moveSprite(dropper, 75, 0)
+}
 function make_coin_dropper () {
     sprite_dropper = sprites.create(assets.image`coin_dropper`, SpriteKind.Player)
     sprite_dropper.top = 0
     sprite_dropper.x = scene.screenWidth() / 2
-    controller.moveSprite(sprite_dropper, 75, 0)
+    enable_movement(sprite_dropper)
 }
 scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite, location) {
     info.changeScoreBy(15)
