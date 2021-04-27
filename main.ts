@@ -79,12 +79,12 @@ function make_all_poles () {
     for (let row = 0; row <= tiles.tilemapRows() / 4 - 2; row++) {
         for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
             if (row % 2 == 0) {
-                tiles.setTileAt(tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1), assets.image`pole`)
-                tiles.setWallAt(tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1), true)
+                location = tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1)
             } else {
-                tiles.setTileAt(tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1), assets.image`pole`)
-                tiles.setWallAt(tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1), true)
+                location = tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1)
             }
+            tiles.setTileAt(location, assets.image`pole`)
+            tiles.setWallAt(location, true)
         }
     }
 }
@@ -94,7 +94,7 @@ function disable_movement (dropper: Sprite) {
 function add_pole (column: number, row: number) {
     tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`partway_through_pole`)
     tiles.setWallAt(tiles.getTileLocation(column, row), true)
-    timer.after(50, function () {
+    timer.after(100, function () {
         tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`pole`)
         tiles.setWallAt(tiles.getTileLocation(column, row), true)
     })
@@ -182,16 +182,17 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite
 })
 function remove_pole (column: number, row: number) {
     tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`partway_through_pole`)
-    tiles.setWallAt(tiles.getTileLocation(column, row), true)
-    timer.after(50, function () {
+    tiles.setWallAt(tiles.getTileLocation(column, row), false)
+    timer.after(100, function () {
         tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`clear`)
-        tiles.setWallAt(tiles.getTileLocation(column, row), true)
+        tiles.setWallAt(tiles.getTileLocation(column, row), false)
     })
 }
 // TODO: 
 // - poles disappear and reappear randomly (make smooth animation too)
 let angle = 0
 let sprite_popup: TextSprite = null
+let location: tiles.Location = null
 let sprite_dropper: Sprite = null
 let actual_score = 0
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
@@ -221,6 +222,30 @@ game.onUpdateInterval(25, function () {
             info.changeScoreBy(5)
         } else {
             info.changeScoreBy(1)
+        }
+    }
+})
+forever(function () {
+    pause(1000)
+    if (Math.percentChance(10)) {
+        for (let row = 0; row <= tiles.tilemapRows() / 4 - 2; row++) {
+            for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
+                if (row % 2 == 0) {
+                    location = tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1)
+                } else {
+                    location = tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1)
+                }
+                if (Math.percentChance(75)) {
+                    if (tiles.tileAtLocationEquals(location, assets.image`clear`)) {
+                        add_pole(tiles.locationXY(location, tiles.XY.column), tiles.locationXY(location, tiles.XY.row))
+                    }
+                } else {
+                    if (tiles.tileAtLocationEquals(location, assets.image`pole`)) {
+                        remove_pole(tiles.locationXY(location, tiles.XY.column), tiles.locationXY(location, tiles.XY.row))
+                    }
+                }
+                pause(100)
+            }
         }
     }
 })
