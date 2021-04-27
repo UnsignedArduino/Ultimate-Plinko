@@ -5,7 +5,8 @@
         "device": "*",
         "Timers": "github:microsoft/arcade-timers#v1.1.0",
         "tilemaps": "github:microsoft/pxt-tilemaps#v1.11.0",
-        "smaller-tilemaps": "github:riknoll/smaller-tilemaps#42b1786ff3aafd61aa89ea9b038230fc039d2af3"
+        "smaller-tilemaps": "github:riknoll/smaller-tilemaps#42b1786ff3aafd61aa89ea9b038230fc039d2af3",
+        "arcade-text": "github:microsoft/arcade-text#v1.3.0"
     },
     "files": [
         "main.blocks",

@@ -24,6 +24,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
 scene.onOverlapTile(SpriteKind.Player, assets.image`10_points`, function (sprite, location) {
     change_score(5)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+    popup_text(sprite, "+10")
 })
 function drop_coin (dropper: Sprite) {
     coins_dropping += 1
@@ -53,6 +54,7 @@ function try_coin_drop () {
 scene.onOverlapTile(SpriteKind.Player, assets.image`100_points`, function (sprite, location) {
     change_score(50)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+    popup_text(sprite, "+100")
 })
 function make_containers () {
     fill_tiles(1, tiles.tilemapRows() - 1 - 3, 8, tiles.tilemapRows() - 1, assets.image`10_points`, false)
@@ -88,6 +90,16 @@ function disable_movement (dropper: Sprite) {
 function enable_movement (dropper: Sprite) {
     controller.moveSprite(dropper, 75, 0)
 }
+function popup_text (sprite: Sprite, text: string) {
+    timer.after(50, function () {
+        sprite_popup = textsprite.create(text, 0, 15)
+        sprite_popup.bottom = sprite.top
+        sprite_popup.x = sprite.x
+        sprite_popup.vy = -25
+        sprite_popup.lifespan = 200
+        sprite_popup.setFlag(SpriteFlag.Ghost, true)
+    })
+}
 function make_coin_dropper () {
     sprite_dropper = sprites.create(assets.image`coin_dropper`, SpriteKind.Player)
     sprite_dropper.top = 0
@@ -97,6 +109,7 @@ function make_coin_dropper () {
 scene.onOverlapTile(SpriteKind.Player, assets.image`30_points`, function (sprite, location) {
     change_score(15)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+    popup_text(sprite, "+30")
 })
 function clear_tilemap () {
     for (let row = 0; row <= tiles.tilemapRows() - 1; row++) {
@@ -136,10 +149,11 @@ function make_walls () {
 scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite, location) {
     change_score(25)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+    popup_text(sprite, "+50")
 })
 // TODO: 
 // - poles disappear and reappear randomly (make smooth animation too)
-// - little icon that pops up like +10 when a coin lands in the +10 container
+let sprite_popup: TextSprite = null
 let sprite_dropper: Sprite = null
 let sprite_coin: Sprite = null
 let actual_score = 0
@@ -160,8 +174,16 @@ game.onUpdate(function () {
 })
 game.onUpdateInterval(25, function () {
     if (info.score() > actual_score) {
-        info.changeScoreBy(-1)
+        if (Math.abs(info.score() - actual_score) > 50) {
+            info.changeScoreBy(-5)
+        } else {
+            info.changeScoreBy(-1)
+        }
     } else if (info.score() < actual_score) {
-        info.changeScoreBy(1)
+        if (Math.abs(info.score() - actual_score) > 50) {
+            info.changeScoreBy(5)
+        } else {
+            info.changeScoreBy(1)
+        }
     }
 })
