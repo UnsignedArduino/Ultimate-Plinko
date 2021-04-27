@@ -90,6 +90,12 @@ function fade_out (delay: number, block: boolean) {
         color.pauseUntilFadeDone()
     }
 }
+function save_high_score () {
+    if (actual_score > high_scores[mode]) {
+        high_scores[mode] = actual_score
+    }
+    blockSettings.writeNumberArray("high_scores", high_scores)
+}
 info.onCountdownEnd(function () {
     can_drop = false
     disable_movement(sprite_dropper)
@@ -97,6 +103,7 @@ info.onCountdownEnd(function () {
         while (sprites.allOfKind(SpriteKind.Player).length > 0) {
             pause(100)
         }
+        save_high_score()
         while (info.score() != actual_score) {
             pause(100)
         }
@@ -240,6 +247,8 @@ let sprite_dropper: Sprite = null
 let can_drop = false
 let coins_dropping = 0
 let actual_score = 0
+let mode = 0
+let high_scores: number[] = []
 color.setPalette(
 color.Black
 )
@@ -250,15 +259,19 @@ make_map()
 make_coin_dropper()
 let text_title = make_title_text(sprites.create(assets.image`title_screen`, SpriteKind.Text), 0, 0)
 blockMenu.setColors(1, 15)
-fade_out(2000, false)
 let in_game = false
+if (!(blockSettings.exists("high_scores"))) {
+    blockSettings.writeNumberArray("high_scores", [0, 0, 0, 0, 0])
+}
+high_scores = blockSettings.readNumberArray("high_scores")
 let options: string[] = []
-options.push("Easy (8 coins + 120 secs)")
-options.push("Regular (4 coins + 60 secs)")
-options.push("Hard (1 coin + 60 secs)")
-options.push("Fast (4 coins + 30 secs)")
+options.push("" + high_scores[0] + " pts | Easy (8 coins + 120 secs)")
+options.push("" + high_scores[1] + " pts | Regular (4 coins + 60 secs)")
+options.push("" + high_scores[2] + " pts | Hard (1 coin + 60 secs)")
+options.push("" + high_scores[3] + " pts | Fast (4 coins + 30 secs)")
 options.push("Free play (10 coins + infinite time)")
 blockMenu.showMenu(options, MenuStyle.List, MenuLocation.BottomHalf)
+fade_out(2000, false)
 timer.background(function () {
     wait_for_selected()
     text_title.ay = -500
@@ -277,6 +290,8 @@ timer.background(function () {
     } else if (blockMenu.selectedMenuIndex() == 4) {
         info.setScore(250)
     }
+    mode = blockMenu.selectedMenuIndex()
+    blockSettings.writeNumber("high-score", high_scores[mode])
     actual_score = info.score()
     coins_dropping = 0
     in_game = true
