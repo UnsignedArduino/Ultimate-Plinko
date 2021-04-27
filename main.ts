@@ -91,6 +91,14 @@ function make_all_poles () {
 function disable_movement (dropper: Sprite) {
     controller.moveSprite(dropper, 0, 0)
 }
+function add_pole (column: number, row: number) {
+    tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`partway_through_pole`)
+    tiles.setWallAt(tiles.getTileLocation(column, row), true)
+    timer.after(50, function () {
+        tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`pole`)
+        tiles.setWallAt(tiles.getTileLocation(column, row), true)
+    })
+}
 function enable_movement (dropper: Sprite) {
     controller.moveSprite(dropper, 75, 0)
 }
@@ -172,6 +180,14 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
     popup_text(sprite, "+50")
 })
+function remove_pole (column: number, row: number) {
+    tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`partway_through_pole`)
+    tiles.setWallAt(tiles.getTileLocation(column, row), true)
+    timer.after(50, function () {
+        tiles.setTileAt(tiles.getTileLocation(column, row), assets.image`clear`)
+        tiles.setWallAt(tiles.getTileLocation(column, row), true)
+    })
+}
 // TODO: 
 // - poles disappear and reappear randomly (make smooth animation too)
 let angle = 0

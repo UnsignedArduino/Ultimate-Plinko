@@ -198,6 +198,13 @@ f f . . . . . . f f
 7 7 7 7 
 7 7 7 7 
 `;
+            case "hA%P]VHV":
+            case "partway_through_pole":return img`
+. . . . 
+. c c . 
+. c c . 
+. . . . 
+`;
         }
         return null;
     })
