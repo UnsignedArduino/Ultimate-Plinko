@@ -1,13 +1,22 @@
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
-    if (Math.percentChance(50)) {
-        sprite.vx = randint(50, 75)
-    } else {
-        sprite.vx = randint(-50, -75)
-    }
-    if (sprite.vy < 0) {
+    if (tiles.locationXY(location, tiles.XY.row) > tiles.tilemapRows() - 4) {
+        sprite.vy = Math.abs(sprite.vy)
+        sprite.setFlag(SpriteFlag.AutoDestroy, true)
+        sprite.setFlag(SpriteFlag.GhostThroughWalls, true)
         timer.after(1, function () {
-            sprite.vy = sprite.vy * 0.5
+            sprite.vy = Math.abs(sprite.vy)
         })
+    } else {
+        if (Math.percentChance(50)) {
+            sprite.vx = randint(50, 75)
+        } else {
+            sprite.vx = randint(-50, -75)
+        }
+        if (sprite.vy < 0) {
+            timer.after(1, function () {
+                sprite.vy = sprite.vy * 0.5
+            })
+        }
     }
 })
 function drop_coin (dropper: Sprite) {
@@ -22,7 +31,10 @@ function drop_coin (dropper: Sprite) {
     })
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    drop_coin(sprite_dropper)
+    if (info.score() >= 25) {
+        drop_coin(sprite_dropper)
+        info.changeScoreBy(-25)
+    }
 })
 function make_containers () {
     fill_tiles(1, tiles.tilemapRows() - 1 - 3, 8, tiles.tilemapRows() - 1, assets.image`10_points`, false)
@@ -98,8 +110,8 @@ function make_walls () {
 let sprite_dropper: Sprite = null
 let sprite_coin: Sprite = null
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
-pause(100)
 scene.setBackgroundImage(assets.image`background`)
 clear_tilemap()
 make_map()
 make_coin_dropper()
+info.setScore(100)
