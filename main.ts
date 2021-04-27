@@ -1,3 +1,29 @@
+scene.onHitWall(SpriteKind.Player, function (sprite, location) {
+    if (Math.percentChance(50)) {
+        sprite.vx = randint(50, 75)
+    } else {
+        sprite.vx = randint(-50, -75)
+    }
+    if (sprite.vy < 0) {
+        timer.after(1, function () {
+            sprite.vy = sprite.vy * 0.5
+        })
+    }
+})
+function drop_coin (dropper: Sprite) {
+    sprite_coin = sprites.create(assets.image`coin`, SpriteKind.Player)
+    sprite_coin.x = dropper.x
+    sprite_coin.bottom = dropper.top
+    sprite_coin.ay = 100
+    sprite_coin.setFlag(SpriteFlag.BounceOnWall, true)
+    sprite_coin.setFlag(SpriteFlag.Ghost, true)
+    timer.after(50, function () {
+        sprite_coin.setFlag(SpriteFlag.Ghost, false)
+    })
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    drop_coin(sprite_dropper)
+})
 function make_containers () {
     fill_tiles(1, tiles.tilemapRows() - 1 - 3, 8, tiles.tilemapRows() - 1, assets.image`10_points`, false)
     fill_tiles(8, tiles.tilemapRows() - 1 - 3, 9, tiles.tilemapRows() - 1, assets.image`wall`, true)
@@ -12,7 +38,7 @@ function make_containers () {
         3 3 3 3 
         `, false)
     fill_tiles(22, tiles.tilemapRows() - 1 - 3, 23, tiles.tilemapRows() - 1, assets.image`wall`, true)
-    fill_tiles(24, tiles.tilemapRows() - 1 - 3, 26, tiles.tilemapRows() - 1, assets.image`50_points`, false)
+    fill_tiles(23, tiles.tilemapRows() - 1 - 3, 26, tiles.tilemapRows() - 1, assets.image`50_points`, false)
     fill_tiles(26, tiles.tilemapRows() - 1 - 3, 27, tiles.tilemapRows() - 1, assets.image`wall`, true)
     fill_tiles(27, tiles.tilemapRows() - 1 - 3, 31, tiles.tilemapRows() - 1, assets.image`25_points`, false)
     fill_tiles(31, tiles.tilemapRows() - 1 - 3, 32, tiles.tilemapRows() - 1, assets.image`wall`, true)
@@ -23,8 +49,10 @@ function make_all_poles () {
         for (let col = 0; col <= tiles.tilemapColumns() / 4 - 2; col++) {
             if (row % 2 == 0) {
                 tiles.setTileAt(tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1), assets.image`pole`)
+                tiles.setWallAt(tiles.getTileLocation((col + 1) * 4 - 2, (row + 1) * 4 - 1), true)
             } else {
                 tiles.setTileAt(tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1), assets.image`pole`)
+                tiles.setWallAt(tiles.getTileLocation((col + 1) * 4 - 1 + 1, (row + 1) * 4 - 1), true)
             }
         }
     }
@@ -68,6 +96,7 @@ function make_walls () {
     }
 }
 let sprite_dropper: Sprite = null
+let sprite_coin: Sprite = null
 micromaps.createTilemap(micromaps.TileSize.Four, scene.screenWidth() / 4, scene.screenHeight() / 4)
 pause(100)
 scene.setBackgroundImage(assets.image`background`)
