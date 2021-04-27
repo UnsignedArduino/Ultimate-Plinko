@@ -120,21 +120,6 @@ function fill_tiles (from_col: number, from_row: number, to_col: number, to_row:
 }
 function change_score (value: number) {
     actual_score += value
-    if (value < 0) {
-        timer.background(function () {
-            for (let index = 0; index < Math.abs(value); index++) {
-                info.changeScoreBy(-1)
-                pause(20)
-            }
-        })
-    } else {
-        timer.background(function () {
-            for (let index = 0; index < value; index++) {
-                info.changeScoreBy(1)
-                pause(20)
-            }
-        })
-    }
 }
 function make_walls () {
     for (let col = 0; col <= tiles.tilemapColumns() - 1; col++) {
@@ -152,6 +137,9 @@ scene.onOverlapTile(SpriteKind.Player, assets.image`50_points`, function (sprite
     change_score(25)
     sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
 })
+// TODO: 
+// - poles disappear and reappear randomly (make smooth animation too)
+// - little icon that pops up like +10 when a coin lands in the +10 container
 let sprite_dropper: Sprite = null
 let sprite_coin: Sprite = null
 let actual_score = 0
@@ -168,5 +156,12 @@ game.onUpdate(function () {
         disable_movement(sprite_dropper)
     } else {
         enable_movement(sprite_dropper)
+    }
+})
+game.onUpdateInterval(25, function () {
+    if (info.score() > actual_score) {
+        info.changeScoreBy(-1)
+    } else if (info.score() < actual_score) {
+        info.changeScoreBy(1)
     }
 })
