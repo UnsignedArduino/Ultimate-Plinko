@@ -5,7 +5,6 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (tiles.locationXY(location, tiles.XY.row) > tiles.tilemapRows() - 4) {
         if (sprite.isHittingTile(CollisionDirection.Bottom)) {
             sprite.vy = Math.abs(sprite.vy)
-            sprite.setFlag(SpriteFlag.AutoDestroy, true)
             sprite.setFlag(SpriteFlag.GhostThroughWalls, true)
             timer.after(1, function () {
                 sprite.vy = Math.abs(sprite.vy)
@@ -40,9 +39,9 @@ function drop_coin (dropper: Sprite, coin: Sprite) {
     coins_dropping += 1
     coin.x = dropper.x
     coin.bottom = dropper.top
-    coin.lifespan = 120000
     coin.ay = 100
     coin.setFlag(SpriteFlag.BounceOnWall, true)
+    coin.setFlag(SpriteFlag.AutoDestroy, true)
     coin.setFlag(SpriteFlag.Ghost, true)
     timer.after(50, function () {
         coin.setFlag(SpriteFlag.Ghost, false)
