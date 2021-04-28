@@ -22,6 +22,11 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
             })
         }
     }
+    timer.throttle("play_sound", music.beat(BeatFraction.Eighth), function () {
+        timer.background(function () {
+            music.playTone(988, music.beat(BeatFraction.Eighth))
+        })
+    })
 })
 function make_title_text (sprite: Sprite, top: number, left: number) {
     sprite.top = top
@@ -187,6 +192,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
     6,
     sprite
     )
+    timer.throttle("play_sound", music.beat(BeatFraction.Eighth), function () {
+        timer.background(function () {
+            music.playTone(988, music.beat(BeatFraction.Eighth))
+        })
+    })
 })
 function clear_tilemap () {
     for (let row = 0; row <= tiles.tilemapRows() - 1; row++) {
